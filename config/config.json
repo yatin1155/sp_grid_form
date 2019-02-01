@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "gen-grid-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/genGrid/GenGridWebPart.js",
+          "manifest": "./src/webparts/genGrid/GenGridWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "GenGridWebPartStrings": "lib/webparts/genGrid/loc/{locale}.js"
+  }
+}
