@@ -11,7 +11,13 @@
       ]
     }
   },
-  "externals": {},
+  "externals": {
+    "jquery": {
+      "path": "https://code.jquery.com/jquery-1.12.4.min.js",
+      "globalName": "jquery"
+    },
+    "datatables.net": "https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"
+  },
   "localizedResources": {
     "GenGridWebPartStrings": "lib/webparts/genGrid/loc/{locale}.js"
   }

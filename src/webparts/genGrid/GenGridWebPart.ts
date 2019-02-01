@@ -8,6 +8,9 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 import styles from './GenGridWebPart.module.scss';
 import * as strings from 'GenGridWebPartStrings';
+import "jquery";
+import "datatables.net";
+import "material-design-lite";
 
 export interface IGenGridWebPartProps {
   description: string;
@@ -17,20 +20,15 @@ export default class GenGridWebPart extends BaseClientSideWebPart<IGenGridWebPar
 
   public render(): void {
     this.domElement.innerHTML = `
-      <div class="${ styles.genGrid }">
-        <div class="${ styles.container }">
-          <div class="${ styles.row }">
-            <div class="${ styles.column }">
-              <span class="${ styles.title }">Welcome to SharePoint!</span>
-              <p class="${ styles.subTitle }">Customize SharePoint experiences using Web Parts.</p>
-              <p class="${ styles.description }">${escape(this.properties.description)}</p>
-              <a href="https://aka.ms/spfx" class="${ styles.button }">
-                <span class="${ styles.label }">Learn more</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>`;
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+    
+    <section id="parentMain">
+    
+    </section>
+    `;
+    require("./genMain.js");
   }
 
   protected get dataVersion(): Version {
