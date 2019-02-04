@@ -2,8 +2,11 @@ var genGridModule = (function () {
 
   var GridConfig = [{
     "headerName": "Wire Grid",
+    "ListName": "Wires",
     "sortingAttr": "Investor",
-    "sorOrder": "asc",
+    "sortOrder": "asc",
+    "baseURL": "https://ivpdemo.sharepoint.com/",
+    "defaultListCount": 10,
     "gHeaders": [{
         "jsonName": "ID",
         "displayName": "ID",
@@ -11,7 +14,7 @@ var genGridModule = (function () {
       },
       {
         "jsonName": "Title",
-        "displayName": "Title",
+        "displayName": "Opportunity Name",
         "visible": true,
         "dataType": "string",
         "popUpEnabled": {
@@ -138,10 +141,10 @@ var genGridModule = (function () {
         "dataType": "string"
       }
     ]
-  }]
+  }];
 
   var init = function () {
-
+    drawtable();
 
   };
 
@@ -151,11 +154,182 @@ var genGridModule = (function () {
 
   var drawtable = function () {
 
-  };
+    var $portletMain = $(".portletMain");
+    $portletMain.attr("id", "parent" + GridConfig[0].ListName);
 
+    $portletMain.append(`
+    <table id="tableMain${GridConfig[0].ListName}" class="hover" style="width:100%">
+          <thead>
+            <tr>${getHeaders()}</tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+    
+    `);
+    dataTableInit();
+
+    function getHeaders() {
+
+      let headerArr = [];
+      $.each(GridConfig[0].gHeaders, (key, value) => {
+
+        headerArr.push(`<th jn-name='${value.jsonName}' data-type='${value.dataType}'>${value.displayName}</th>`);
+      });
+
+      return headerArr.join("");
+    };
+
+    function dataTableInit() {
+
+      var table = $("#tableMain" + GridConfig[0].ListName).DataTable({
+        "scrollX": true,
+        "order": [
+          utils.getCurrentSorting()
+        ],
+        "autoWidth": true,
+        "language": {
+          "decimal": ".",
+          "thousands": ","
+        },
+        'ajax': {
+          'url': (GridConfig[0].baseURL ? GridConfig[0].baseURL : "https://ivpdemo.sharepoint.com/") + "_api/web/lists/getbytitle('" + GridConfig[0].ListName + "')/items",
+          'headers': {
+            'Accept': 'application/json;odata=nometadata',
+            'odata-version': ''
+          },
+          'dataSrc': function (data) {
+
+            // var jnName = utils.getJsonName(GridConfig[0].gHeaders);
+            // var finalArr = data.value.map(function (item) {
+            //   var tempArr = [];
+            //   $.each(jnName, (k, v) => {
+            //     tempArr.push(item[v]);
+            //   })
+            //   return tempArr;
+            // });
+
+
+            // return finalArr;
+
+            var finalArr = data.value.map(function (item) {
+              var tempArr = [];
+              $.each(GridConfig[0].gHeaders, (k, obj) => {
+                var dt = item[obj.jsonName];
+                dt = utils.preFormatRules(dt, obj);
+                tempArr.push(dt);
+              })
+              return tempArr;
+            });
+
+
+            return finalArr;
+          }
+        },
+        "columnDefs": [{
+          "targets": [0],
+          "visible": false,
+          "searchable": false
+        }]
+
+      });
+
+
+      $("#tableMain" + GridConfig[0].ListName+"_wrapper").prepend("<span class='headerName'>"+GridConfig[0].headerName +"</span>");
+
+      $("#tableMain" + GridConfig[0].ListName+"_length").css("display","none");
+      $("#tableMain" + GridConfig[0].ListName+"_filter label input").attr("placeholder","Enter Name...");
+
+        //Table layout adjustments
+       
+       
+    };
+  }
   var eventListener = function () {
 
   };
+
+  var applyStyles = () =>{
+    $("#tableMain"+GridConfig[0].ListName+"_wrapper  table").css("width",100 * 14+"px" );
+    $("#tableMain"+GridConfig[0].ListName+"_wrapper .dataTables_scrollHead th").each((k,v)=>{
+        
+        $(v).css({
+            "width":"100px",
+            "padding": "6px"
+            // "background-image": "none"
+        });
+    });
+    $("#tableMain"+GridConfig[0].ListName+" tbody td").each((k,v)=>{
+        $(v).css({
+            "width":"100px",
+            "padding": "6px"
+        });
+    });
+};
+  var utils = {
+    getJsonName: function (headers) {
+      var jsonArr = headers.map((obj) => {
+        return obj.jsonName;
+      });
+      return jsonArr;
+    },
+    getCurrentSorting: function () {
+
+      let order = GridConfig[0].sortOrder || "desc";
+      var index;
+      let sortAttr = GridConfig[0].sortingAttr || GridConfig[0].gHeaders[0].jsonName;
+      $.each(GridConfig[0].gHeaders, function (k, v) {
+        if (v.jsonName === sortAttr) {
+          index = k;
+        }
+      });
+
+      return [index, order];
+    },
+    fromatNumbers: function (nStr) {
+      nStr += '';
+      var x = nStr.split('.');
+      var x1 = x[0];
+      var x2 = x.length > 1 ? '.' + x[1] : '';
+      var rgx = /(\d+)(\d{3})/;
+      while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+      }
+      return "$" + x1 + x2;
+    },
+    formatDate: function (dateStr) {
+      // "2019-01-01T08:00:00Z"
+      var date = new Date(dateStr);
+      var year = date.getFullYear();
+      var month = (1 + date.getMonth()).toString();
+      month = month.length > 1 ? month : '0' + month;
+      var day = date.getDate().toString();
+      day = day.length > 1 ? day : '0' + day;
+      var finalDate = day + "/" + month + "/" + year;
+
+      return finalDate;
+    },
+    preFormatRules: function (dataValue, dataObj) {
+      if (dataValue === null) {
+        if (dataObj.dataType === "date" || dataObj.dataType === "string") {
+          dataValue = "-"
+        } else if (dataObj.dataType === "currency") {
+          dataValue =this.fromatNumbers(0);
+        }
+      } else {
+        if (dataObj.dataType === "string") {
+
+        } else if (dataObj.dataType === "date") {
+          dataValue = this.formatDate(dataValue, dataObj.format)
+        } else if (dataObj.dataType === "currency") {
+          dataValue = this.fromatNumbers(dataValue);
+        }
+      }
+
+
+      return dataValue;
+    }
+  };
+
 
   return {
     init: init
@@ -165,6 +339,6 @@ var genGridModule = (function () {
 
 
 $(document).ready(function () {
-    
+
   genGridModule.init();
 })
