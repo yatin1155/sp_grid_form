@@ -145,12 +145,9 @@ var genGridModule = (function () {
 
   var init = function () {
     drawtable();
-
+    eventListener();
   };
 
-  var getListdata = function () {
-
-  };
 
   var drawtable = function () {
 
@@ -245,7 +242,13 @@ var genGridModule = (function () {
     };
   }
   var eventListener = function () {
+    $('.dataTables_scrollBody tbody').on('mouseout', 'tr', function () {
+      $(this).removeClass("activeHover");
+  });
 
+  $('.dataTables_scrollBody tbody').on('mouseover', 'tr', function () {
+      $(this).addClass("activeHover");
+  });
   };
 
   var applyStyles = () =>{
