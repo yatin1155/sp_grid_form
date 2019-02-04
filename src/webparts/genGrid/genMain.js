@@ -49,27 +49,27 @@ var genGridModule = (function () {
       },
       {
         "jsonName": "Investing_x0020_Entity_x0020_Nam",
-        "displayName": "Investing Entity Name",
+        "displayName": "IEntity Name",
         "dataType": "string"
       },
       {
         "jsonName": "Fund_Id",
-        "displayName": "Fund_Id",
+        "displayName": "Fund Id",
         "dataType": "string"
       },
       {
         "jsonName": "Fund_Name",
-        "displayName": "Fund_Name",
+        "displayName": "Fund Name",
         "dataType": "string"
       },
       {
         "jsonName": "Completed_State",
-        "displayName": "Completed_State",
+        "displayName": "Status",
         "dataType": "string"
       },
       {
         "jsonName": "Completed_x0020_By",
-        "displayName": "Completed_x0020_By",
+        "displayName": "Completed By",
         "dataType": "string"
       },
       {
@@ -95,12 +95,12 @@ var genGridModule = (function () {
       },
       {
         "jsonName": "Requested_Amount",
-        "displayName": "Requested_Amount",
+        "displayName": "Requested Amount",
         "dataType": "currency"
       },
       {
         "jsonName": "Estimated_Amount",
-        "displayName": "Estimated_Amount",
+        "displayName": "Estimated Amount",
         "dataType": "currency"
       },
       {
@@ -116,28 +116,28 @@ var genGridModule = (function () {
       },
       {
         "jsonName": "Pay_Date",
-        "displayName": "Pay_Date",
+        "displayName": "Pay Date",
         "dataType": "date",
         "format": "mm/dd/yyyy"
       },
       {
         "jsonName": "From_Account",
-        "displayName": "From_Account",
+        "displayName": "From Account",
         "dataType": "string"
       },
       {
         "jsonName": "From_Account_Number",
-        "displayName": "From_Account_Number",
+        "displayName": "From Account Number",
         "dataType": "string"
       },
       {
         "jsonName": "To_Account",
-        "displayName": "To_Account",
+        "displayName": "To Account",
         "dataType": "string"
       },
       {
         "jsonName": "To_Account_Number",
-        "displayName": "To_Account_Number",
+        "displayName": "To Account Number",
         "dataType": "string"
       }
     ]
