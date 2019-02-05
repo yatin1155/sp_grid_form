@@ -196,18 +196,6 @@ var genGridModule = (function () {
           },
           'dataSrc': function (data) {
 
-            // var jnName = utils.getJsonName(GridConfig[0].gHeaders);
-            // var finalArr = data.value.map(function (item) {
-            //   var tempArr = [];
-            //   $.each(jnName, (k, v) => {
-            //     tempArr.push(item[v]);
-            //   })
-            //   return tempArr;
-            // });
-
-
-            // return finalArr;
-
             var finalArr = data.value.map(function (item) {
               var tempArr = [];
               $.each(GridConfig[0].gHeaders, (k, obj) => {
@@ -222,52 +210,31 @@ var genGridModule = (function () {
             return finalArr;
           }
         },
-        "columnDefs": [{
-          "targets": [0],
-          "visible": false,
-          "searchable": false
-        }]
-
+        "columnDefs": utils.createColumnDefs()
       });
 
 
-      $("#tableMain" + GridConfig[0].ListName+"_wrapper").prepend("<span class='headerName'>"+GridConfig[0].headerName +"</span>");
+      $("#tableMain" + GridConfig[0].ListName + "_wrapper").prepend("<span class='headerName'>" + GridConfig[0].headerName + "</span>");
 
-      $("#tableMain" + GridConfig[0].ListName+"_length").css("display","none");
-      $("#tableMain" + GridConfig[0].ListName+"_filter label input").attr("placeholder","Enter Name...");
+      $("#tableMain" + GridConfig[0].ListName + "_length").css("display", "none");
+      $("#tableMain" + GridConfig[0].ListName + "_filter label input").attr("placeholder", "Enter Name...");
 
-        //Table layout adjustments
-       
-       
+      //Table layout adjustments
+
+
     };
   }
   var eventListener = function () {
     $('.dataTables_scrollBody tbody').on('mouseout', 'tr', function () {
       $(this).removeClass("activeHover");
-  });
+    });
 
-  $('.dataTables_scrollBody tbody').on('mouseover', 'tr', function () {
+    $('.dataTables_scrollBody tbody').on('mouseover', 'tr', function () {
       $(this).addClass("activeHover");
-  });
+    });
   };
 
-  var applyStyles = () =>{
-    $("#tableMain"+GridConfig[0].ListName+"_wrapper  table").css("width",100 * 14+"px" );
-    $("#tableMain"+GridConfig[0].ListName+"_wrapper .dataTables_scrollHead th").each((k,v)=>{
-        
-        $(v).css({
-            "width":"100px",
-            "padding": "6px"
-            // "background-image": "none"
-        });
-    });
-    $("#tableMain"+GridConfig[0].ListName+" tbody td").each((k,v)=>{
-        $(v).css({
-            "width":"100px",
-            "padding": "6px"
-        });
-    });
-};
+
   var utils = {
     getJsonName: function (headers) {
       var jsonArr = headers.map((obj) => {
@@ -316,7 +283,7 @@ var genGridModule = (function () {
         if (dataObj.dataType === "date" || dataObj.dataType === "string") {
           dataValue = "-"
         } else if (dataObj.dataType === "currency") {
-          dataValue =this.fromatNumbers(0);
+          dataValue = this.fromatNumbers(0);
         }
       } else {
         if (dataObj.dataType === "string") {
@@ -330,6 +297,29 @@ var genGridModule = (function () {
 
 
       return dataValue;
+    },
+    createColumnDefs: function () {
+      let invisible = {
+        "targets": [],
+        "visible": false,
+        "searchable": false
+      };
+      let renderColumns = {
+        "render": function ( data, type, row ) {
+            
+            return "<i class='fa fa-external-link popOut' aria-hidden='true'></i>"+ data ;
+        },
+        "targets": []  
+    };
+      $.each(GridConfig[0].gHeaders, (key, value) => {
+        if (value.visible!== undefined &&  !value.visible) {
+          invisible.targets.push(key);
+        } else if (value.popUpEnabled && value.popUpEnabled.value) {
+          renderColumns.targets.push(key);
+        }
+      });
+
+      return [invisible,renderColumns];
     }
   };
 
