@@ -7,6 +7,14 @@ var genGridModule = (function () {
     "sortOrder": "asc",
     "baseURL": "https://ivpdemo.sharepoint.com/",
     "defaultListCount": 10,
+    "popOutConfig": {
+     
+      "urlName": "https://google.com",
+      "queryParams": [
+        "ID",
+        "Title"
+      ]
+    },
     "gHeaders": [{
         "jsonName": "ID",
         "displayName": "ID",
@@ -19,12 +27,7 @@ var genGridModule = (function () {
         "dataType": "string",
         "popUpEnabled": {
           "value": true,
-          "icon": "fa-external-link",
-          "urlName": "https://google.com",
-          "queryParams": [
-            "ID",
-            "Title"
-          ]
+          "icon": "fa-external-link"
         }
       },
       {
@@ -147,11 +150,12 @@ var genGridModule = (function () {
     drawtable();
     eventListener();
   };
-
+  var table_elm;
 
   var drawtable = function () {
 
     var $portletMain = $(".portletMain");
+    $portletMain.empty();
     $portletMain.attr("id", "parent" + GridConfig[0].ListName);
 
     $portletMain.append(`
@@ -178,7 +182,7 @@ var genGridModule = (function () {
 
     function dataTableInit() {
 
-      var table = $("#tableMain" + GridConfig[0].ListName).DataTable({
+      table_elm = $("#tableMain" + GridConfig[0].ListName).DataTable({
         "scrollX": true,
         "order": [
           utils.getCurrentSorting()
@@ -231,6 +235,26 @@ var genGridModule = (function () {
 
     $('.dataTables_scrollBody tbody').on('mouseover', 'tr', function () {
       $(this).addClass("activeHover");
+    });
+
+    $('.dataTables_scrollBody tbody').on('click', '.popOut', function () {
+      debugger;
+      var tr = $(this).closest("tr");
+      var data = table_elm.row(tr).data();
+
+
+      //To be done
+      // extract all the field with there json value to be send 
+      //Stringify the obj
+      //base64 encoding of the above string and send
+      
+
+      var queryParam = 'OpName=' + data[1];
+
+      var baseUrl = 'https://ivpdemo.sharepoint.com/SitePages/Opportunity-Grid.aspx?' + encodeURIComponent(queryParam);
+
+      // alert( 'You clicked on '+data[2]+'\'s row' );
+      window.open(baseUrl, '_blank');
     });
   };
 
@@ -299,27 +323,29 @@ var genGridModule = (function () {
       return dataValue;
     },
     createColumnDefs: function () {
+      let renderIcon;
       let invisible = {
         "targets": [],
         "visible": false,
         "searchable": false
       };
       let renderColumns = {
-        "render": function ( data, type, row ) {
-            
-            return "<i class='fa fa-external-link popOut' aria-hidden='true'></i>"+ data ;
+        "render": function (data, type, row) {
+
+          return "<i class='fa "+renderIcon+" popOut' aria-hidden='true'></i>" + data;
         },
-        "targets": []  
-    };
+        "targets": []
+      };
       $.each(GridConfig[0].gHeaders, (key, value) => {
-        if (value.visible!== undefined &&  !value.visible) {
+        if (value.visible !== undefined && !value.visible) {
           invisible.targets.push(key);
         } else if (value.popUpEnabled && value.popUpEnabled.value) {
+          renderIcon = value.popUpEnabled.icon;
           renderColumns.targets.push(key);
         }
       });
 
-      return [invisible,renderColumns];
+      return [invisible, renderColumns];
     }
   };
 
