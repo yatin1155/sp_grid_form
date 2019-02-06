@@ -8,8 +8,7 @@ var genGridModule = (function () {
     "baseURL": "https://ivpdemo.sharepoint.com/",
     "defaultListCount": 10,
     "popOutConfig": {
-     
-      "urlName": "https://google.com",
+      "urlName": "https://ivpdemo.sharepoint.com/SitePages/Wire-popUp.aspx",
       "queryParams": [
         "ID",
         "Title"
@@ -238,22 +237,29 @@ var genGridModule = (function () {
     });
 
     $('.dataTables_scrollBody tbody').on('click', '.popOut', function () {
-      debugger;
+
       var tr = $(this).closest("tr");
       var data = table_elm.row(tr).data();
+      var config = GridConfig[0]["popOutConfig"];
+
+      var filter = {};
+      GridConfig[0].gHeaders.filter((k, v) => {
+        if (config.queryParams.includes(k.jsonName)) {
+          filter[k.jsonName] = data[v];
+        }
+      });
+
+     
+      // Encode the String
+      var encodedString = btoa(JSON.stringify(filter));
+
+      // Decode the String
+      // var decodedString = atob(encodedString);
+      // console.log(decodedString); // Outputs: "Hello World!"
+      //---------------------------------
 
 
-      //To be done
-      // extract all the field with there json value to be send 
-      //Stringify the obj
-      //base64 encoding of the above string and send
-      
-
-      var queryParam = 'OpName=' + data[1];
-
-      var baseUrl = 'https://ivpdemo.sharepoint.com/SitePages/Opportunity-Grid.aspx?' + encodeURIComponent(queryParam);
-
-      // alert( 'You clicked on '+data[2]+'\'s row' );
+      var baseUrl = config["urlName"]+'?' + encodedString;
       window.open(baseUrl, '_blank');
     });
   };
@@ -332,7 +338,7 @@ var genGridModule = (function () {
       let renderColumns = {
         "render": function (data, type, row) {
 
-          return "<i class='fa "+renderIcon+" popOut' aria-hidden='true'></i>" + data;
+          return "<i class='fa " + renderIcon + " popOut' aria-hidden='true'></i>" + data;
         },
         "targets": []
       };
