@@ -117,48 +117,77 @@ var genGridModule = (function () {
         "dataType": "currency"
       },
       {
-        "jsonName": "Pay_Date",
-        "displayName": "Pay Date",
-        "dataType": "date",
-        "format": "mm/dd/yyyy"
+          "jsonName": "Pay_Date",
+          "displayName": "Pay Date",
+          "dataType": "date",
+          "format": "mm/dd/yyyy"
       },
       {
-        "jsonName": "From_Account",
-        "displayName": "From Account",
-        "dataType": "string"
+          "jsonName": "From_Account",
+          "displayName": "From Account",
+          "dataType": "string"
       },
       {
-        "jsonName": "From_Account_Number",
-        "displayName": "From Account Number",
-        "dataType": "string"
+          "jsonName": "From_Account_Number",
+          "displayName": "From Account Number",
+          "dataType": "string"
       },
       {
-        "jsonName": "To_Account",
-        "displayName": "To Account",
-        "dataType": "string"
+          "jsonName": "To_Account",
+          "displayName": "To Account",
+          "dataType": "string"
       },
       {
-        "jsonName": "To_Account_Number",
-        "displayName": "To Account Number",
-        "dataType": "string"
+          "jsonName": "To_Account_Number",
+          "displayName": "To Account Number",
+          "dataType": "string"
       }
     ]
   }];
 
   var init = function () {
-    drawtable();
-    eventListener();
+    getServiceData();
+    // drawtable();
+    
+    
+  };
+  var getServiceData = function(){
+    $.ajax({
+      url: (GridConfig[0].baseURL ? GridConfig[0].baseURL : "https://ivpdemo.sharepoint.com/") + "_api/web/lists/getbytitle('" + GridConfig[0].ListName + "')/items",
+      method: "GET",
+      headers: {
+        'Accept': 'application/json;odata=nometadata',
+        'odata-version': ''
+      },
+      success: function (data) {
+        var finalArr = data.value.map(function (item) {
+          var tempArr = [];
+          $.each(GridConfig[0].gHeaders, (k, obj) => {
+            var dt = item[obj.jsonName];
+            dt = utils.preFormatRules(dt, obj);
+            tempArr.push(dt);
+          })
+          return tempArr;
+        });
+
+        drawtable(finalArr);
+        
+      },
+      error: function (data) {
+        console.log("Service Failed");
+      }
+    });
   };
   var table_elm;
 
-  var drawtable = function () {
+  var drawtable = function (dataObj) {
 
     var $portletMain = $(".portletMain");
     $portletMain.empty();
     $portletMain.attr("id", "parent" + GridConfig[0].ListName);
 
     $portletMain.append(`
-    <table id="tableMain${GridConfig[0].ListName}" class="hover" style="width:100%">
+    <table id="tableMain${GridConfig[0].ListName}" class="display" style="width:100%">
           <thead>
             <tr>${getHeaders()}</tr>
           </thead>
@@ -166,8 +195,10 @@ var genGridModule = (function () {
         </table>
     
     `);
-    dataTableInit();
 
+    dataTableInit(dataObj);
+    applyStyles();
+    eventListener();
     function getHeaders() {
 
       let headerArr = [];
@@ -179,10 +210,19 @@ var genGridModule = (function () {
       return headerArr.join("");
     };
 
-    function dataTableInit() {
+    function applyStyles(){
+      debugger;
+      $("#tableMainWires").css("width", "2500px");
+      table_elm.draw();
+    }
+
+    function dataTableInit(dataObj) {
 
       table_elm = $("#tableMain" + GridConfig[0].ListName).DataTable({
+       
         "scrollX": true,
+        "autoWidth": false,
+        "data":dataObj,
         "order": [
           utils.getCurrentSorting()
         ],
@@ -191,28 +231,7 @@ var genGridModule = (function () {
           "decimal": ".",
           "thousands": ","
         },
-        'ajax': {
-          'url': (GridConfig[0].baseURL ? GridConfig[0].baseURL : "https://ivpdemo.sharepoint.com/") + "_api/web/lists/getbytitle('" + GridConfig[0].ListName + "')/items",
-          'headers': {
-            'Accept': 'application/json;odata=nometadata',
-            'odata-version': ''
-          },
-          'dataSrc': function (data) {
-
-            var finalArr = data.value.map(function (item) {
-              var tempArr = [];
-              $.each(GridConfig[0].gHeaders, (k, obj) => {
-                var dt = item[obj.jsonName];
-                dt = utils.preFormatRules(dt, obj);
-                tempArr.push(dt);
-              })
-              return tempArr;
-            });
-
-
-            return finalArr;
-          }
-        },
+        
         "columnDefs": utils.createColumnDefs()
       });
 
