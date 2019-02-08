@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.2/MicrosoftTeams.schema.json",
   "manifestVersion": "1.2",
-  "packageName": "GenGrid",
-  "id": "94da2305-63eb-417a-b987-cffa1d46d288",
+  "packageName": "GenForm",
+  "id": "8f4e4fba-e5ce-4668-bb8e-197c59b9ba9c",
   "version": "0.1",
   "developer": {
     "name": "SPFx + Teams Dev",
@@ -11,11 +11,11 @@
     "termsOfUseUrl": "https://www.microsoft.com/en-us/servicesagreement"
   },
   "name": {
-    "short": "GenGrid"
+    "short": "GenForm"
   },
   "description": {
-    "short": "gen-grid description",
-    "full": "gen-grid description"
+    "short": "genForm description",
+    "full": "genForm description"
   },
   "icons": {
     "outline": "tab20x20.png",
@@ -24,7 +24,7 @@
   "accentColor": "#004578",
   "configurableTabs": [
     {
-      "configurationUrl": "https://{teamSiteDomain}{teamSitePath}/_layouts/15/TeamsLogon.aspx?SPFX=true&dest={teamSitePath}/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId=94da2305-63eb-417a-b987-cffa1d46d288",
+      "configurationUrl": "https://{teamSiteDomain}{teamSitePath}/_layouts/15/TeamsLogon.aspx?SPFX=true&dest={teamSitePath}/_layouts/15/teamshostedapp.aspx%3FopenPropertyPane=true%26teams%26componentId=8f4e4fba-e5ce-4668-bb8e-197c59b9ba9c",
       "canUpdateConfiguration": false,
       "scopes": [
         "team"

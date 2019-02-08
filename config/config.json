@@ -9,6 +9,14 @@
           "manifest": "./src/webparts/genGrid/GenGridWebPart.manifest.json"
         }
       ]
+    },
+    "gen-form-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/genForm/GenFormWebPart.js",
+          "manifest": "./src/webparts/genForm/GenFormWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -19,6 +27,7 @@
     "datatables.net": "https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"
   },
   "localizedResources": {
-    "GenGridWebPartStrings": "lib/webparts/genGrid/loc/{locale}.js"
+    "GenGridWebPartStrings": "lib/webparts/genGrid/loc/{locale}.js",
+    "GenFormWebPartStrings": "lib/webparts/genForm/loc/{locale}.js"
   }
 }

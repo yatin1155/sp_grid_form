@@ -3,7 +3,7 @@
   "solution": {
     "name": "gen-grid-form-client-side-solution",
     "id": "ee408796-d1a8-47b0-8f7e-2b74af27d42b",
-    "version": "1.0.0.0",
+    "version": "1.0.0.1",
     "includeClientSideAssets": true,
     "isDomainIsolated": false
   },
