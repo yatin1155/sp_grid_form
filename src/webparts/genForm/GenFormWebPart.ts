@@ -9,6 +9,8 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import styles from './GenFormWebPart.module.scss';
 import * as strings from 'GenFormWebPartStrings';
 import './genFormWebPart.scss';
+import "jquery";
+import "material-design-lite";
 
 export interface IGenFormWebPartProps {
   description: string;
