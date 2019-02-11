@@ -6,6 +6,7 @@ $primary-green: #00b294;
 $light-portlet-blue: aliceblue;
 $table-odd: #f1f1f1;
 $table-even: rgb(255, 255, 255);
+$dark-blue: #004e8c;
 
 .portletMain {
   margin-bottom: 0px;
@@ -17,6 +18,146 @@ $table-even: rgb(255, 255, 255);
   border: 2px solid $primary-green;
   background: $light-portlet-blue;
   box-shadow: 0 0 1px rgba(0, 0, 0, .01), 0 2px 4px rgba(0, 0, 0, .08);
+
+  .portlet-title {
+    background-color: $dark-blue;
+    padding: 7px;
+    border: 2px solid #3a4552;
+    -webkit-box-shadow: 0 5px 40px -10px rgba(0, 0, 0, .57);
+    box-shadow: 5px 40px -10px rgba(0, 0, 0, .57);
+    color: white;
+    font-size: 16px;
+
+    .tools {
+      visibility: visible;
+      display: inline-block;
+      padding: 0;
+      margin: 0;
+      margin-top: 1px;
+      float: right;
+    }
+  }
+
+  .portlet-body {
+    padding: 0 8px 0 8px;
+  }
+
+  .notify {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 0;
+    box-sizing: border-box;
+    color: white;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.41);
+    overflow: hidden;
+    box-sizing: border-box;
+    // transition:height .2s;
+  }
+
+  #notifyType:before {
+    display: block;
+    margin-top: 15px;
+    font-weight: 800;
+    font-size: 20px;
+  }
+
+  .active {
+    height: 50px;
+    height: 46px;
+    top: 90%;
+    position: relative;
+    width: 40%;
+    left: 31%;
+
+  }
+
+  .success:before {
+    Content: "Success!";
+    color: #00b294;
+  }
+
+  .failure:before {
+    Content: "Request failed. Please try again !";
+    color: #b71c1c;
+  }
+}
+
+#Main_Form {
+  .grid-item {
+    display: grid;
+    grid-template-columns: 35% 35% 35%;
+
+    label {
+      color: #004e8c;
+    }
+
+    .mdl-textfield__label:after {
+      background-color: #004e8c !important;
+    }
+
+    .mdl-textfield {
+      width: 85%;
+    }
+
+    .mdl-textfield__input {
+      border-bottom: 1px solid #004e8c !important;
+      background: #f0f8ff !important;
+    }
+
+    .mdl-textfield__input[type='date'] {
+      text-align: right;
+    }
+
+    .mdl-textfield--floating-label.has-placeholder .mdl-textfield__label,
+    .mdl-textfield--floating-label.is-dirty .mdl-textfield__label,
+    .mdl-textfield--floating-label.is-focused .mdl-textfield__label {
+      color: #004e8c !important;
+    }
+  }
+
+}
+
+.newFormGrid {
+
+  .btnGroup,
+  .saveBtnGroup {
+    display: inline-block;
+  }
+
+  .btnGroup {
+    float: right;
+  }
+
+  #saveForm {
+    color: #fff;
+    background-color: #004e8c;
+  }
+
+  #cancelForm {
+    background-color: grey;
+  }
+
+  .select2-selection.select2-selection--multiple.randomShit {
+    border: none !important;
+    border-bottom: 1px solid #004e8c !important;
+    border-radius: unset !important;
+    background: #f0f8ff !important;
+
+    .select2-selection__choice {
+      background-color: #004e8ced;
+      color: white;
+      font-weight: 700;
+      font-size: 10px;
+
+      .select2-selection__choice__remove {
+        color: #fff;
+        font-size: 11px;
+        margin-right: 8px;
+      }
+    }
+  }
 }
 
 // loading Icon
