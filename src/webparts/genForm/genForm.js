@@ -6,6 +6,13 @@ var genFormModule = (function () {
       "headerName": "Wire Details",
       "ListName": "Wires",
       "gHeaders": [{
+          "jsonName": "Title",
+          "type": "textField",
+          "dataType": "string",
+          "displayName": "Transaction Name",
+          "addClass": "",
+          "errortext": "Enter a valid string."
+        }, {
           "jsonName": "Activity_Type",
           "type": "textField",
           "dataType": "string",
@@ -96,80 +103,99 @@ var genFormModule = (function () {
       "headerName": "Wire Details",
       "ListName": "Wires",
       "gHeaders": [{
+          "jsonName": "Title",
+          "type": "textField",
+          "dataType": "string",
+          "displayName": "Transaction Name",
+          "property": "readonly",
+          "addClass": "forcedDisabled",
+          "errortext": "Enter a valid string."
+        },
+        {
           "jsonName": "Activity_Type",
           "type": "textField",
           "dataType": "string",
-          "displayName": "Activity_Type",
-          "addClass": ""
+          "displayName": "Activity Type",
+          "addClass": "",
+          "errortext": "Enter a valid string."
         },
         {
-          "jsonName": "Opportunity_id",
+          "jsonName": "Opportunity_Id",
           "type": "textField",
           "dataType": "number",
-          "displayName": "Opportunity_id",
-          "addClass": ""
+          "displayName": "Opp Id",
+          "addClass": "forcedDisabled",
+          "errortext": "Enter a valid number."
         },
         {
           "jsonName": "Investor_ID",
           "type": "textField",
           "dataType": "number",
-          "displayName": "Investor_ID",
-          "addClass": ""
+          "displayName": "Investor ID",
+          "addClass": "",
+          "errortext": "Enter a valid number.",
+          "precision": 2
         },
         {
           "jsonName": "Investor",
           "type": "textField",
           "dataType": "string",
           "displayName": "Investor",
-          "addClass": ""
+          "addClass": "",
+          "errortext": "Enter a valid string."
         },
         {
-          "jsonName": "Investing_Entity_Name",
+          "jsonName": "Investing_x0020_Entity_x0020_Nam",
           "type": "textField",
           "dataType": "string",
-          "displayName": "Investing_Entity_Name",
-          "addClass": ""
+          "displayName": "Entity Name",
+          "addClass": "",
+          "errortext": "Enter a valid string."
         },
         {
           "jsonName": "Fund_Id",
           "type": "textField",
           "dataType": "number",
-          "displayName": "Fund_Id",
-          "addClass": ""
+          "displayName": "Fund Id",
+          "addClass": "",
+          "errortext": "Enter a valid number."
         },
         {
           "jsonName": "Fund_Name",
           "type": "textField",
           "dataType": "string",
-          "displayName": "Fund_Name",
-          "addClass": ""
+          "displayName": "Fund Name",
+          "addClass": "",
+          "errortext": "Enter a valid string."
         },
         {
-          "jsonName": "Final_Amount",
+          "jsonName": "Amount",
           "type": "textField",
           "dataType": "currency",
-          "displayName": "Final_Amount",
-          "addClass": ""
+          "displayName": "Amount",
+          "addClass": "",
+          "errortext": "Enter a valid number.",
+          "precision": 2
         },
         {
-          "jsonName": "Completed_x0020_Date",
+          "jsonName": "Created",
           "type": "textField",
-          "displayName": "Completed Date",
+          "displayName": "Created Date",
           "dataType": "date",
           "format": "mm/dd/yyyy"
         },
         {
-          "jsonName": "Wire_Status",
+          "jsonName": "Completed_State",
           "type": "dropDown",
           "dataType": "string",
-          "displayName": "Wire_Status",
+          "displayName": "Wire Status",
           "optionArr": [
             "None",
             "Initiated",
             "Completed",
             "Pending",
-            "Send to TMS",
-            "TMS Export Completed"
+            "SendtoTMS",
+            "TMSExportCompleted"
           ]
         }
       ]
@@ -184,7 +210,7 @@ var genFormModule = (function () {
     if (URL.split("?")[1]) {
       var decodedFilters = atob(URL.split("?")[1]);
       decodedFilters = JSON.parse(decodedFilters);
-      updateFormLayout(decodedFilters);
+      updateFormLayout.init(decodedFilters);
     } else {
       newFormLayout.init();
     }
@@ -202,6 +228,8 @@ var genFormModule = (function () {
       $portletMain.append(this.drawForm());
 
       this.eventListeners();
+
+      $portletMain = null;
     },
     drawForm: function () {
 
@@ -454,12 +482,143 @@ var genFormModule = (function () {
 
   };
 
-  var updateFormLayout = function (Filters) {
+  var updateFormLayout = {
+    updateConfig: config[0].UpdateFormGrid,
+    init: function (decodedFilters) {
 
+      this.getFilteredData(decodedFilters);
+    },
+    getFilteredData: function (filters) {
+
+      var filterString = this.getFilterString(filters);
+
+
+      var URL = config[0].baseURL + "_api/web/lists/getbytitle('" + this.updateConfig.ListName + "')/items?$filter=" + filterString;
+      $.ajax({
+        url: URL,
+        type: "GET",
+        headers: {
+          'Accept': 'application/json;odata=nometadata',
+          'odata-version': ''
+        },
+        success: function (data) {
+          var itemObj = data["value"][0]
+          var dataArray = (updateFormLayout.updateConfig.gHeaders).map((obj) => {
+            var value = itemObj[obj.jsonName];
+            if (obj.dataType === "number" || obj.dataType === "currency") {
+              if (value == null) {
+                value = 0;
+              }
+
+              value = utils.formatNumbers(value + "", obj.precision)
+            } else if (obj.dataType === "date") {
+              value = utils.formatDate(value);
+            } else if (obj.dataType === "string" && (value === null || value === "null")) {
+              value = "-";
+            }
+
+
+            return {
+              [obj.jsonName]: value
+            }
+          });
+
+
+          updateFormLayout.drawTemplate(dataArray);
+
+        },
+        error: function (data, errorCode, errorMessage) {
+          alert(errorMessage)
+        }
+      });
+    },
+    getFilterString: function (filterObj) {
+      var tempStr = "";
+      $.each(filterObj, function (key, value) {
+        tempStr += key + ' eq ' + value + ' & ';
+      });
+      return tempStr;
+    },
+    drawTemplate: function (dataArray) {
+
+      var $portletMain = $(".portletMain");
+      $portletMain.empty();
+      $portletMain.attr("id", "parent_UpdateFormGrid_" + this.updateConfig.ListName);
+      $portletMain.addClass("UpdateFormGrid");
+
+      $portletMain.append(this.getFormHtml());
+
+      this.eventListeners();
+
+      $portletMain = null;
+    },
+    getFormHtml: function(){
+        var htmlArr = [];
+
+        //Header
+        htmlArr.push(`
+        <div class="portlet-title mdl-cell mdl-cell--12-col mdl-cell--12-col-table">
+          <h8>
+            <i class="fa fa-table"></i>
+            ${this.updateConfig.headerName}
+          </h8>
+        </div>
+        `);
+
+        //body
+        htmlArr.push(`
+        <div class="portlet-body mdl-cell mdl-cell--12-col mdl-cell--12-col-table">
+            <form id="update_Form" role="form"  class="disabled">
+                <div class="grid-container">
+                    <div class="grid-item">
+
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input"  type="text" id="Activity_Name" >
+                    <label class="mdl-textfield__label" for="Activity_Name">Activity Name</label>
+                    <span class="mdl-textfield__error">Enter a valid string.</span>
+                    </div>
+                    
+                    
+                    </div>
+                </div>
+            </form>
+        </div>
+        `);
+
+        return htmlArr.join("");
+
+    },
+    eventListeners: function(){
+
+    }
   };
 
   var utils = {
+    formatNumbers: function (nStr, precision = 0) {
+      nStr = parseFloat(nStr).toFixed(precision);
+      nStr += '';
+      var x = nStr.split('.');
+      var x1 = x[0];
+      var x2 = x.length > 1 ? '.' + x[1] : '';
+      var rgx = /(\d+)(\d{3})/;
+      while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+      }
 
+      return x1 + x2;
+    },
+    formatDate: function (dateStr) {
+      // "2019-01-01T08:00:00Z"
+      var date = new Date(dateStr);
+      var year = date.getFullYear();
+      var month = (1 + date.getMonth()).toString();
+      month = month.length > 1 ? month : '0' + month;
+      var day = date.getDate().toString();
+      day = day.length > 1 ? day : '0' + day;
+      var finalDate = month + "/" + day + "/" + year;
+
+      return finalDate;
+    }
   }
 
 
