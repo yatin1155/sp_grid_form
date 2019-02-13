@@ -211,7 +211,6 @@ var genGridModule = (function () {
     };
 
     function applyStyles(){
-      debugger;
       $("#tableMainWires").css("width", "2500px");
       table_elm.draw();
     }

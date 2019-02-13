@@ -512,7 +512,7 @@ var genFormModule = (function () {
 
               value = utils.formatNumbers(value + "", obj.precision)
             } else if (obj.dataType === "date") {
-              value = utils.formatDate(value);
+              value = utils.formatDate(value, "yyyy-MM-dd");
             } else if (obj.dataType === "string" && (value === null || value === "null")) {
               value = "-";
             }
@@ -547,16 +547,16 @@ var genFormModule = (function () {
       $portletMain.addClass("UpdateFormGrid");
 
       $portletMain.append(this.getFormHtml());
-
+      this.parseData(dataArray);
       this.eventListeners();
 
       $portletMain = null;
     },
-    getFormHtml: function(){
-        var htmlArr = [];
+    getFormHtml: function () {
+      var htmlArr = [];
 
-        //Header
-        htmlArr.push(`
+      //Header
+      htmlArr.push(`
         <div class="portlet-title mdl-cell mdl-cell--12-col mdl-cell--12-col-table">
           <h8>
             <i class="fa fa-table"></i>
@@ -565,31 +565,159 @@ var genFormModule = (function () {
         </div>
         `);
 
-        //body
-        htmlArr.push(`
+      //body
+      htmlArr.push(`
         <div class="portlet-body mdl-cell mdl-cell--12-col mdl-cell--12-col-table">
-            <form id="update_Form" role="form"  class="disabled">
+            <form id="update_Form" role="form"  class="">
                 <div class="grid-container">
                     <div class="grid-item">
-
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input"  type="text" id="Activity_Name" >
-                    <label class="mdl-textfield__label" for="Activity_Name">Activity Name</label>
-                    <span class="mdl-textfield__error">Enter a valid string.</span>
-                    </div>
-                    
-                    
+                      ${this.getHeaders()}
                     </div>
                 </div>
             </form>
+
+            <div class="btnGroup"> 
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="editForm">
+                Edit
+              </button>
+              <div class="saveBtnGroup">
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="saveForm">
+                  Save
+                </button>
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="cancelForm">
+                  Cancel
+                </button>
+              </div>
+            </div>
+            <div class="notify"><span id="notifyType" class=""></span></div>
         </div>
         `);
 
-        return htmlArr.join("");
+
+
+      return htmlArr.join("");
 
     },
-    eventListeners: function(){
+    getHeaders: function () {
 
+      var domArr = [];
+
+      $.each(this.updateConfig.gHeaders, function (k, v) {
+        if (v.type === "textField") {
+          if (v.dataType === "string") {
+
+            let sDom = `
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-dirty ${v.addClass}" jName='${v.jsonName}'>
+                    <input class="mdl-textfield__input"  type="text" id="${v.jsonName}"  ${v.property} ${v.addAttr} >
+                    <label class="mdl-textfield__label" for="${v.jsonName}">${v.displayName}</label>
+                    <span class="mdl-textfield__error">${v.errortext}</span>
+                </div>
+                `;
+            domArr.push(sDom);
+          } else if (v.dataType === "number" || v.dataType === "currency") {
+            let sDom = `
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-dirty ${v.addClass}" jName='${v.jsonName}'>
+                <input class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" id="${v.jsonName}" ${v.property} ${v.addAttr}>
+                <label class="mdl-textfield__label" for="${v.jsonName}">${v.displayName}</label>
+                <span class="mdl-textfield__error">${v.errortext}</span>
+              </div>
+              `;
+            domArr.push(sDom);
+          } else if (v.dataType === "email") {
+            let sDom = `
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-dirty ${v.addClass}" jName='${v.jsonName}'>
+                  <input class="mdl-textfield__input"  type="email" id="${v.jsonName}" ${v.property} ${v.addAttr}>
+                  <label class="mdl-textfield__label" for="${v.jsonName}">${v.displayName}</label>
+                  <span class="mdl-textfield__error">${v.errortext}</span>
+              </div>
+              `;
+            domArr.push(sDom);
+
+          } else if (v.dataType === "date") {
+            let sDom = `
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-dirty ${v.addClass}" jName='${v.jsonName}'>
+                  <input class="mdl-textfield__input"  type="date" id="${v.jsonName}" ${v.property} ${v.addAttr}>
+                  <label class="mdl-textfield__label" for="${v.jsonName}">${v.displayName}</label>
+                  <span class="mdl-textfield__error">${v.errortext}</span>
+              </div>
+              `;
+            domArr.push(sDom);
+          }
+
+        } else if (v.type == "dropDown") {
+          var getOptions = (arr) => {
+            let tempArr = [];
+
+            $.each(arr, (k, v) => {
+              tempArr.push("<option value='" + v + "'>" + v + "</option>");
+            });
+
+            return tempArr.join("");
+          };
+          var str = `<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-dirty ${v.addClass}" styles="${v.styles}" jName='${v.jsonName}'> 
+                            <select class="mdl-textfield__input" id="${v.jsonName}" name="${v.jsonName}" ${v.multiSelect == true ? 'multiple=true':''} >
+                            ${getOptions(v.optionArr)}
+                            </select>
+                            <label class="mdl-textfield__label" for="${v.jsonName}">${v.displayName}</label>
+                        </div>`;
+          domArr.push(str);
+        } else if (v.type == "textArea") {
+          var str = `
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-dirty ${v.addClass} " style="${v.styles}">
+            <textarea class="mdl-textfield__input ${v.addClass}" type="text" rows= "3" id="${v.jsonName}"  ${v.property} ${v.addAttr}></textarea>
+            <label class="mdl-textfield__label" for="${v.jsonName}">${v.displayName}</label>
+          </div>
+          `;
+
+          domArr.push(str);
+        }
+
+      });
+
+      return domArr.join("");
+    },
+    parseData: function (dataArray) {
+      // i should have kept a map of gHeaders with value and iterate over that Array. To be used for parsing data
+      // as per dataType eg: date :: As of now handled in massaging the data logic
+      $.each(dataArray, function (key, obj) {
+        for (var key in obj) {
+          $("#" + key).val(obj[key]);
+        }
+      });
+
+      $("#update_Form").addClass("disabled");
+      $(".saveBtnGroup").css("display", "none");
+    },
+    eventListeners: function () {
+
+      $("#editForm").off("click");
+      $("#editForm").on("click", function () {
+        $("#editForm").css("display", "none"); //Hide edit btn
+
+        $(".saveBtnGroup").css("display", "block");
+        $(".portletMain").addClass("makeGlow"); //make div glow
+
+        $("#update_Form").removeClass("disabled"); //make div editable
+      });
+
+      $("#saveForm").off("click");
+      $("#saveForm").on("click", function () {
+        
+        $(".saveBtnGroup").css("display", "none");
+        $("#editForm").css("display", "block");
+        $(".portletMain").removeClass("makeGlow");
+        $("#update_Form").addClass("disabled");
+
+        
+      });
+
+      $("#cancelForm").off("click");
+      $("#cancelForm").on("click", () => {
+        $(".saveBtnGroup").css("display", "none");
+        $("#editForm").css("display", "block");
+        $(".portletMain").removeClass("makeGlow");
+        $("#update_Form").addClass("disabled");
+      });
     }
   };
 
@@ -607,15 +735,21 @@ var genFormModule = (function () {
 
       return x1 + x2;
     },
-    formatDate: function (dateStr) {
+    formatDate: function (dateStr, format) {
       // "2019-01-01T08:00:00Z"
+      var finalDate;
       var date = new Date(dateStr);
       var year = date.getFullYear();
       var month = (1 + date.getMonth()).toString();
       month = month.length > 1 ? month : '0' + month;
       var day = date.getDate().toString();
       day = day.length > 1 ? day : '0' + day;
-      var finalDate = month + "/" + day + "/" + year;
+      if (format === "yyyy-MM-dd") {
+        finalDate = year + "-" + month + "-" + day;
+      } else {
+        finalDate = month + "/" + day + "/" + year;
+      }
+
 
       return finalDate;
     }

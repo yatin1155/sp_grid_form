@@ -38,8 +38,23 @@ $dark-blue: #004e8c;
     }
   }
 
+  .disabled {
+    .mdl-textfield {
+      pointer-events: none !important;
+
+    }
+  }
+
   .portlet-body {
     padding: 0 8px 0 8px;
+  }
+
+  .forcedDisabled {
+    cursor: not-allowed;
+
+    input {
+      pointer-events: none;
+    }
   }
 
   .notify {
@@ -84,7 +99,8 @@ $dark-blue: #004e8c;
   }
 }
 
-#Main_Form {
+#Main_Form,
+#update_Form {
   .grid-item {
     display: grid;
     grid-template-columns: 35% 35% 35%;
@@ -157,6 +173,45 @@ $dark-blue: #004e8c;
         margin-right: 8px;
       }
     }
+  }
+}
+
+.UpdateFormGrid {
+  .btnGroup {
+    display: inline-block;
+    float: right;
+  }
+
+  .saveBtnGroup {
+    display: inline-block;
+
+    button {
+      width: 80px;
+    }
+  }
+
+
+
+  #editForm,
+  #saveForm {
+    color: rgb(255, 255, 255);
+    background-color: rgb(0, 78, 140);
+  }
+
+  #cancelForm {
+    background-color: grey;
+  }
+}
+
+
+.makeGlow {
+  -webkit-animation: glowDiv .5s infinite alternate;
+  animation: glowDiv .5s infinite alternate;
+}
+
+@keyframes glowDiv {
+  to {
+    box-shadow: 0 0 30px #008c4b;
   }
 }
 
