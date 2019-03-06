@@ -144,7 +144,6 @@ var genGridModule = (function () {
       }
     ]
   }];
-
   var init = function () {
     getServiceData();
     // drawtable();
@@ -179,7 +178,6 @@ var genGridModule = (function () {
     });
   };
   var table_elm;
-
   var drawtable = function (dataObj) {
 
     var $portletMain = $(".portletMain");
@@ -281,8 +279,6 @@ var genGridModule = (function () {
       window.open(baseUrl, '_blank');
     });
   };
-
-
   var utils = {
     getJsonName: function (headers) {
       var jsonArr = headers.map((obj) => {
@@ -372,16 +368,11 @@ var genGridModule = (function () {
       return [invisible, renderColumns];
     }
   };
-
-
   return {
     init: init
   }
 })();
 
-
-
 $(document).ready(function () {
-
   genGridModule.init();
 })

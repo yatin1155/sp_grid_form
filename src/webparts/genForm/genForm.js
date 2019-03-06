@@ -205,7 +205,7 @@ var genFormModule = (function () {
     checkFormMode()
   };
   var checkFormMode = function () {
-
+debugger;
     let URL = window.location.href;
     if (URL.split("?")[1]) {
       var decodedFilters = atob(URL.split("?")[1]);
@@ -219,7 +219,7 @@ var genFormModule = (function () {
   var __REQUESTDIGEST;
   var newFormLayout = {
     newFormConfig: config[0].newFormGrid,
-    init: function () {
+    init: function () {  //Entry Point
       var $portletMain = $(".portletMain");
       $portletMain.empty();
       $portletMain.attr("id", "parent_newFormGrid_" + config[0].newFormGrid.ListName);
@@ -231,7 +231,7 @@ var genFormModule = (function () {
 
       $portletMain = null;
     },
-    drawForm: function () {
+    drawForm: function () {  //Draw the form
 
       var htmlArr = [];
       // Draw Header Name
@@ -481,14 +481,13 @@ var genFormModule = (function () {
     }
 
   };
-
   var updateFormLayout = {
     updateConfig: config[0].UpdateFormGrid,
-    init: function (decodedFilters) {
+    init: function (decodedFilters) {  //Entry Points
 
       this.getFilteredData(decodedFilters);
     },
-    getFilteredData: function (filters) {
+    getFilteredData: function (filters) { //Fetch the data
 
       var filterString = this.getFilterString(filters);
 
@@ -720,7 +719,6 @@ var genFormModule = (function () {
       });
     }
   };
-
   var utils = {
     formatNumbers: function (nStr, precision = 0) {
       nStr = parseFloat(nStr).toFixed(precision);
@@ -753,15 +751,12 @@ var genFormModule = (function () {
 
       return finalDate;
     }
-  }
-
-
+  };
   return {
     init
   }
 })();
 
 $(document).ready(function () {
-
   genFormModule.init();
 })
